@@ -1,16 +1,29 @@
+@keyframes scale {
+  from {
+    opacity: 0.2;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .board {
   @apply grid grid-cols-3;
-
-  & > div:nth-child(3n + 1) {
+  & > button > span {
+    animation: scale 0.15s ease-out;
+  }
+  & > button:nth-child(3n + 1) {
     @apply border-l-0;
   }
-  & > div:nth-child(3n) {
+  & > button:nth-child(3n) {
     @apply border-r-0;
   }
-  & > div:nth-child(-n + 3) {
+  & > button:nth-child(-n + 3) {
     @apply border-t-0;
   }
-  & > div:nth-last-child(-n + 3) {
+  & > button:nth-last-child(-n + 3) {
     @apply border-b-0;
   }
 }
