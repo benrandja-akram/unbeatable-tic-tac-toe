@@ -51,10 +51,10 @@ function min(...boards: EnhancedBoard[]): {
       evaluations.push(value)
       if (value === -1) break
     }
-    const max = Math.max(...evaluations)
+    const min = Math.min(...evaluations)
     return {
-      value: max,
-      position: boards[evaluations.findIndex((ev) => ev === max)].position,
+      value: min,
+      position: boards[evaluations.findIndex((ev) => ev === min)].position,
     }
   }
 
