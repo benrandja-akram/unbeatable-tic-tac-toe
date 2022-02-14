@@ -1,4 +1,4 @@
-import { useReducer } from 'react'
+import { useEffect, useReducer, useRef } from 'react'
 import clone from 'lodash/cloneDeep'
 import minimax, { evaluateBoard, isBoardCompleted } from './minimax'
 
@@ -44,11 +44,15 @@ const initialState: IState = {
 
 export default function useGameState() {
   const [game, dispatch] = useReducer(reducer, initialState)
-
+  const soundRef = useRef<any>()
+  useEffect(() => {
+    soundRef.current = new Audio('/note.mp3')
+  }, [])
   return [
     game,
     (action: IAction) => {
       dispatch(action)
+      soundRef.current.play()
       setTimeout(() => {
         dispatch({ player: 'computer' })
       }, 150)
