@@ -1,0 +1,16 @@
+.board {
+  @apply grid grid-cols-3;
+
+  & > div:nth-child(3n + 1) {
+    @apply border-l-0;
+  }
+  & > div:nth-child(3n) {
+    @apply border-r-0;
+  }
+  & > div:nth-child(-n + 3) {
+    @apply border-t-0;
+  }
+  & > div:nth-last-child(-n + 3) {
+    @apply border-b-0;
+  }
+}
