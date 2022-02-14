@@ -1,5 +1,5 @@
 {
-  "name": "tic-tac-toe",
+  "name": "unbeatable-tic-tac-toe",
   "private": true,
   "scripts": {
     "dev": "next dev",
