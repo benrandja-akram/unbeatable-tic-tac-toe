@@ -4,11 +4,13 @@ type IRow = [IValue, IValue, IValue]
 type IBoard = [IRow, IRow, IRow]
 type IAction =
   | {
-      player: 'player'
+      type: 'player-move'
       value: IValue
       position: IPosition
     }
-  | { player: 'computer' }
+  | { type: 'computer-move' }
+  | { type: 'reset' }
+
 type IState = {
   board: IBoard
   turn: 'computer' | 'player'

@@ -3,12 +3,9 @@ import clone from 'lodash/cloneDeep'
 type EnhancedBoard = { board: IBoard; position: IPosition }
 
 function minimax(board: IBoard) {
-  const start = Date.now()
-
-  const pos = max(...generateBoards(board, 'o')).position
-  console.log(Date.now() - start)
-  return pos
+  return max(...generateBoards(board, 'o')).position
 }
+
 function max(...boards: EnhancedBoard[]): {
   value: number
   position: IPosition

@@ -6,75 +6,58 @@ import useGameState from '../use-game-state'
 
 import styles from './index.module.scss'
 
-type BoxProps = React.ComponentProps<'button'> & {
-  position: IPosition
-  dispatch: (action: IAction) => void
-  value: 'x' | 'o' | undefined
-  turn: 'computer' | 'player'
-  winner: boolean
-}
-
-function Box({
-  className = '',
-  position,
-  dispatch,
-  children,
-  value,
-  turn,
-  winner,
-  ...props
-}: BoxProps) {
-  return (
-    <button
-      onClick={() => dispatch({ position, value: 'x', player: 'player' })}
-      disabled={turn === 'computer'}
-      className={classNames(
-        'flex justify-center items-center rounded-lg w-40 h-40 border-slate-700 border-4 disabled:cursor-not-allowed cursor-pointer transition-colors',
-        className,
-        {
-          'hover:bg-slate-50': !props.disabled,
-          'text-slate-800': !winner,
-          'text-amber-600': winner,
-        }
-      )}
-      {...props}
-    >
-      {value && (
-        <span className="">
-          {value === 'x' ? (
-            <Cross1Icon className="w-28 h-28" />
-          ) : (
-            <ValueIcon className="w-28 h-28" />
-          )}
-        </span>
-      )}
-    </button>
-  )
-}
-
 const Home: NextPage = () => {
   const [{ board, turn, isCompleted }, dispatch] = useGameState()
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
+    <div className="w-screen h-screen flex justify-center items-center flex-col space-y-24">
       <div className={styles.board}>
         {Array(9)
           .fill(null)
           .map((_, i) => (
-            <Box
+            <button
               key={i}
-              position={[Math.floor(i / 3), i % 3]}
-              dispatch={dispatch}
-              value={board[Math.floor(i / 3)][i % 3]}
-              turn={turn}
-              winner={isCompleted && !!getWiningCombo(board)?.includes(i)}
-              disabled={
-                isCompleted ||
-                turn === 'computer' ||
-                !!board[Math.floor(i / 3)][i % 3]
+              onClick={() =>
+                dispatch({
+                  position: [Math.floor(i / 3), i % 3],
+                  value: 'x',
+                  type: 'player-move',
+                })
               }
-            />
+              disabled={turn === 'computer' || isCompleted}
+              className={classNames(
+                'flex justify-center items-center lg:rounded-lg w-24 h-24 lg:w-40 lg:h-40 border-slate-700 border-2 lg:border-4 disabled:cursor-not-allowed cursor-pointer transition-colors',
+                {
+                  'hover:bg-slate-50':
+                    !isCompleted ||
+                    turn === 'computer' ||
+                    !!board[Math.floor(i / 3)][i % 3],
+                  'text-slate-800':
+                    !isCompleted && !!getWiningCombo(board)?.includes(i),
+                  'text-amber-600':
+                    isCompleted && !!getWiningCombo(board)?.includes(i),
+                }
+              )}
+            >
+              {board[Math.floor(i / 3)][i % 3] && (
+                <span className="">
+                  {board[Math.floor(i / 3)][i % 3] === 'x' ? (
+                    <Cross1Icon className="w-16 h-16 lg:w-28 lg:h-28" />
+                  ) : (
+                    <ValueIcon className="w-16 h-16 lg:w-28 lg:h-28" />
+                  )}
+                </span>
+              )}
+            </button>
           ))}
+      </div>
+      <div className="flex items-center justify-center">
+        <button
+          onClick={() => dispatch({ type: 'reset' })}
+          className="px-16 py-4 text-xl rounded-md bg-teal-500 text-white font-bold"
+        >
+          Reset Game
+        </button>
       </div>
     </div>
   )

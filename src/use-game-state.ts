@@ -3,11 +3,14 @@ import clone from 'lodash/cloneDeep'
 import minimax, { evaluateBoard, isBoardCompleted } from './minimax'
 
 const reducer = (state: IState, action: IAction): IState => {
-  console.log(action)
-  if (state.isCompleted) return state
-  switch (action.player) {
-    case 'player': {
+  switch (action.type) {
+    case 'reset':
+      return initialState
+
+    case 'player-move': {
+      if (state.isCompleted) return state
       if (state.board[action.position[0]][action.position[1]]) return state
+
       const newBoard: IBoard = clone(state.board) // immutability
       newBoard[action.position[0]][action.position[1]] = action.value
 
@@ -17,7 +20,10 @@ const reducer = (state: IState, action: IAction): IState => {
         isCompleted: !!evaluateBoard(newBoard) || isBoardCompleted(newBoard),
       }
     }
-    case 'computer': {
+
+    case 'computer-move': {
+      if (state.isCompleted) return state
+
       const newBoard: IBoard = clone(state.board) // immutability
       const position = minimax(state.board)
       newBoard[position[0]][position[1]] = 'o'
@@ -32,6 +38,7 @@ const reducer = (state: IState, action: IAction): IState => {
       return state
   }
 }
+
 const initialState: IState = {
   board: [
     [undefined, undefined, undefined],
@@ -54,8 +61,8 @@ export default function useGameState() {
       dispatch(action)
       soundRef.current.play()
       setTimeout(() => {
-        dispatch({ player: 'computer' })
-      }, 150)
+        dispatch({ type: 'computer-move' })
+      }, 100)
     },
   ] as [IState, (action: IAction) => void]
 }
