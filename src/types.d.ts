@@ -10,10 +10,10 @@ type IAction =
     }
   | { type: 'computer-move' }
   | { type: 'reset' }
+  | { type: 'toggle-sound' }
 
 type IState = {
   board: IBoard
   turn: 'computer' | 'player'
-  isCompleted?: boolean
-  hasWinner?: boolean
+  sound: boolean
 }

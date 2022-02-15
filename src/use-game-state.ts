@@ -1,39 +1,39 @@
 import { useEffect, useReducer, useRef } from 'react'
-import clone from 'lodash/cloneDeep'
-import minimax, { evaluateBoard, isBoardCompleted } from './minimax'
+import minimax from './minimax'
+import { cloneBoard, evaluateBoard, isBoardCompleted } from './utils'
 
 const reducer = (state: IState, action: IAction): IState => {
   switch (action.type) {
+    case 'toggle-sound':
+      return { ...state, sound: !state.sound }
     case 'reset':
-      return initialState
+      return { ...initialState, sound: state.sound }
 
     case 'player-move': {
-      if (state.isCompleted) return state
+      if (isBoardCompleted(state.board)) return state
       if (state.board[action.position[0]][action.position[1]]) return state
 
-      const newBoard: IBoard = clone(state.board) // immutability
+      const newBoard: IBoard = cloneBoard(state.board) // immutability
       newBoard[action.position[0]][action.position[1]] = action.value
 
       return {
+        ...state,
         turn: 'computer',
         board: newBoard,
-        hasWinner: !!evaluateBoard(newBoard),
-        isCompleted: !!evaluateBoard(newBoard) || isBoardCompleted(newBoard),
       }
     }
 
     case 'computer-move': {
-      if (state.isCompleted) return state
+      if (isBoardCompleted(state.board)) return state
 
-      const newBoard: IBoard = clone(state.board) // immutability
+      const newBoard: IBoard = cloneBoard(state.board) // immutability
       const position = minimax(state.board)
       newBoard[position[0]][position[1]] = 'o'
 
       return {
+        ...state,
         turn: 'player',
         board: newBoard,
-        hasWinner: !!evaluateBoard(newBoard),
-        isCompleted: !!evaluateBoard(newBoard) || isBoardCompleted(newBoard),
       }
     }
     default:
@@ -48,55 +48,65 @@ const initialState: IState = {
     [undefined, undefined, undefined],
   ],
   turn: 'player',
+  sound: true,
 }
 
 export default function useGameState() {
   const [game, dispatch] = useReducer(reducer, initialState)
+
   const playerSound = useRef<any>()
   const computerSound = useRef<any>()
   const gameOverSound = useRef<any>()
   const hasWinnerSound = useRef<any>()
-
-  const gameRef = useRef(game)
-  gameRef.current = game
+  const hasWinner = !!evaluateBoard(game.board)
+  const isCompleted =
+    !!evaluateBoard(game.board) || isBoardCompleted(game.board)
 
   useEffect(() => {
+    // initialize and prefetch audio files
     playerSound.current = new Audio('/note.mp3')
     computerSound.current = new Audio('/note-low.mp3')
     gameOverSound.current = new Audio('/game-over.mp3')
     hasWinnerSound.current = new Audio('/game-over-tie.mp3')
-
-    playerSound.current.addEventListener('ended', () => {
-      dispatch({ type: 'computer-move' })
-    })
   }, [])
 
   useEffect(() => {
-    if (!game.board.flat().some(Boolean)) return
-    if (game.hasWinner) {
+    // no sound or game has not yet started
+    if (!game.sound || !game.board.flat().some(Boolean)) return
+    if (hasWinner) {
       hasWinnerSound.current.play()
       return
     }
-    if (game.isCompleted) {
+    if (isCompleted) {
       gameOverSound.current.play()
       return
     }
-
-    if (game.turn === 'computer') {
-      playerSound.current.play()
-    }
-    if (game.turn === 'player') {
-      computerSound.current.play()
-    }
-  }, [game.isCompleted, game.turn, game.board, game.hasWinner])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCompleted, game.turn, game.board, hasWinner])
 
   return [
-    game,
+    {
+      ...game,
+      hasWinner,
+      isCompleted,
+    },
     (action: IAction) => {
       dispatch(action)
-      if (action.type === 'player-move' && game.turn === 'player') {
-        playerSound.current.play()
+      if (action.type === 'player-move') {
+        if (game.sound) {
+          playerSound.current.play()
+        }
+        setTimeout(() => {
+          dispatch({ type: 'computer-move' })
+          if (game.sound) computerSound.current.play()
+        }, 150)
+      }
+      if (action.type === 'toggle-sound' && !game.sound) {
+        computerSound.current.play()
       }
     },
-  ] as [IState, (action: IAction) => void]
+  ] as [
+    IState & { hasWinner: boolean; isCompleted: boolean },
+    (action: IAction) => void
+  ]
 }
