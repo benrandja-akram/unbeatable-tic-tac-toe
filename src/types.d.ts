@@ -5,7 +5,6 @@ type IBoard = [IRow, IRow, IRow]
 type IAction =
   | {
       type: 'player-move'
-      value: IValue
       position: IPosition
     }
   | { type: 'computer-move' }

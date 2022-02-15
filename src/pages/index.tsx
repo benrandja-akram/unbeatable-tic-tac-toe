@@ -55,7 +55,6 @@ const Home: NextPage = () => {
                 onClick={() => {
                   dispatch({
                     position,
-                    value: 'x',
                     type: 'player-move',
                   })
                 }}

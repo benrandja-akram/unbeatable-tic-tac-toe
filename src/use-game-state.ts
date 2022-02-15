@@ -10,11 +10,12 @@ const reducer = (state: IState, action: IAction): IState => {
       return { ...initialState, sound: state.sound }
 
     case 'player-move': {
-      if (isBoardCompleted(state.board)) return state
+      if (isBoardCompleted(state.board) || state.turn === 'computer')
+        return state
       if (state.board[action.position[0]][action.position[1]]) return state
 
       const newBoard: IBoard = cloneBoard(state.board) // immutability
-      newBoard[action.position[0]][action.position[1]] = action.value
+      newBoard[action.position[0]][action.position[1]] = 'x'
 
       return {
         ...state,
@@ -24,7 +25,7 @@ const reducer = (state: IState, action: IAction): IState => {
     }
 
     case 'computer-move': {
-      if (isBoardCompleted(state.board)) return state
+      if (isBoardCompleted(state.board) || state.turn === 'player') return state
 
       const newBoard: IBoard = cloneBoard(state.board) // immutability
       const position = minimax(state.board)
@@ -51,7 +52,7 @@ const initialState: IState = {
   sound: true,
 }
 
-export default function useGameState() {
+function useGameState() {
   const [game, dispatch] = useReducer(reducer, initialState)
 
   const playerSound = useRef<any>()
@@ -110,3 +111,6 @@ export default function useGameState() {
     (action: IAction) => void
   ]
 }
+
+export { reducer }
+export default useGameState
