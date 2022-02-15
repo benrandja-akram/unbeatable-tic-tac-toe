@@ -61,7 +61,7 @@ const Home: NextPage = () => {
                 }}
                 disabled={turn === 'computer' || isCompleted || !!value}
                 className={classNames(
-                  'flex justify-center items-center w-24 h-24 lg:w-36 lg:h-36 border-slate-700 border-2 lg:border-4 disabled:cursor-not-allowed cursor-pointer transition-all rounded',
+                  'flex justify-center items-center w-24 h-24 lg:w-36 lg:h-36 border-slate-700 border-2 lg:border-4 disabled:cursor-not-allowed cursor-pointer transition-all lg:rounded',
                   {
                     'bg-amber-100': isHighlighted,
                   }
