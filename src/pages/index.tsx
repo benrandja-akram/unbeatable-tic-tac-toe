@@ -12,6 +12,7 @@ import { getWiningCombo } from '../utils'
 import useGameState from '../use-game-state'
 
 import styles from './index.module.scss'
+import Head from 'next/head'
 
 const Home: NextPage = () => {
   const [{ board, turn, isCompleted, hasWinner, sound }, dispatch] =
@@ -23,13 +24,15 @@ const Home: NextPage = () => {
         <button
           onClick={() => dispatch({ type: 'toggle-sound' })}
           className="border p-2 rounded-md hover:bg-slate-50 text-gray-700 hover:scale-105 transition-transform"
+          aria-label="toggle sound"
         >
           {sound ? soundIcon : noSoundIcon}
         </button>
         <Link href="https://github.com/benrandja-akram/unbeatable-tic-tac-toe">
           <a
             target="_blank"
-            className="border p-2 hover:border-sky-500 rounded-md hover:bg-sky-50 text-gray-700 hover:scale-105 transition-transform"
+            className="border p-2 hover:border-indigo-500 rounded-md hover:bg-indigo-50 text-gray-700 hover:scale-105 transition-transform"
+            aria-label="github repo link"
           >
             <GitHubLogoIcon className="h-5 w-5" />
           </a>
@@ -60,18 +63,17 @@ const Home: NextPage = () => {
                 }}
                 disabled={turn === 'computer' || isCompleted || !!value}
                 className={classNames(
-                  'flex justify-center items-center w-24 h-24 lg:w-36 lg:h-36 border-slate-700 border-2 lg:border-4 disabled:cursor-not-allowed cursor-pointer transition-all lg:rounded',
-                  {
-                    'bg-amber-100': isHighlighted,
-                  }
+                  'flex justify-center items-center w-24 h-24 lg:w-36 lg:h-36 border-slate-700 border-2 lg:border-4 disabled:cursor-not-allowed cursor-pointer transition-all'
                 )}
+                aria-label="cell"
               >
                 {value && (
                   <span>
                     {value === 'x' ? (
                       <Cross1Icon
                         className={classNames(
-                          'text-blue-500 w-16 h-16 lg:w-24 lg:h-24'
+                          'text-blue-500 w-16 h-16 lg:w-24 lg:h-24',
+                          { 'opacity-50': !isHighlighted && hasWinner }
                         )}
                       />
                     ) : (
@@ -79,7 +81,8 @@ const Home: NextPage = () => {
                         strokeWidth={8}
                         className={classNames(
                           'text-violet-500 w-16 h-16 lg:w-24 lg:h-24',
-                          isHighlighted && styles.highlight
+                          isHighlighted && styles.highlight,
+                          { 'opacity-30': !isHighlighted && hasWinner }
                         )}
                       />
                     )}
@@ -92,7 +95,7 @@ const Home: NextPage = () => {
       <div className="flex items-center justify-center">
         <button
           onClick={() => dispatch({ type: 'reset' })}
-          className="space-x-4 flex items-center px-16 py-4 text-xl rounded-md bg-teal-500 hover:bg-teal-400 transition-colors text-white font-bold w-[288px] lg:w-[432px] justify-center"
+          className="space-x-4 flex items-center px-16 py-4 text-xl rounded-md bg-indigo-500 hover:bg-indigo-600 transition-colors text-white font-bold w-[288px] lg:w-[432px] justify-center"
         >
           <ReloadIcon className="w-5 h-5" />
           <span>Reset Game</span>
