@@ -17,6 +17,7 @@ const reducer = (state: IState, action: IAction): IState => {
       return {
         turn: 'computer',
         board: newBoard,
+        hasWinner: !!evaluateBoard(newBoard),
         isCompleted: !!evaluateBoard(newBoard) || isBoardCompleted(newBoard),
       }
     }
@@ -31,6 +32,7 @@ const reducer = (state: IState, action: IAction): IState => {
       return {
         turn: 'player',
         board: newBoard,
+        hasWinner: !!evaluateBoard(newBoard),
         isCompleted: !!evaluateBoard(newBoard) || isBoardCompleted(newBoard),
       }
     }
@@ -46,23 +48,55 @@ const initialState: IState = {
     [undefined, undefined, undefined],
   ],
   turn: 'player',
-  isCompleted: false,
 }
 
 export default function useGameState() {
   const [game, dispatch] = useReducer(reducer, initialState)
-  const soundRef = useRef<any>()
+  const playerSound = useRef<any>()
+  const computerSound = useRef<any>()
+  const gameOverSound = useRef<any>()
+  const hasWinnerSound = useRef<any>()
+
+  const gameRef = useRef(game)
+  gameRef.current = game
+
   useEffect(() => {
-    soundRef.current = new Audio('/note.mp3')
+    playerSound.current = new Audio('/note.mp3')
+    computerSound.current = new Audio('/note-low.mp3')
+    gameOverSound.current = new Audio('/game-over.mp3')
+    hasWinnerSound.current = new Audio('/game-over-tie.mp3')
+
+    playerSound.current.addEventListener('ended', () => {
+      dispatch({ type: 'computer-move' })
+    })
   }, [])
+
+  useEffect(() => {
+    if (!game.board.flat().some(Boolean)) return
+    if (game.hasWinner) {
+      hasWinnerSound.current.play()
+      return
+    }
+    if (game.isCompleted) {
+      gameOverSound.current.play()
+      return
+    }
+
+    if (game.turn === 'computer') {
+      playerSound.current.play()
+    }
+    if (game.turn === 'player') {
+      computerSound.current.play()
+    }
+  }, [game.isCompleted, game.turn, game.board, game.hasWinner])
+
   return [
     game,
     (action: IAction) => {
       dispatch(action)
-      soundRef.current.play()
-      setTimeout(() => {
-        dispatch({ type: 'computer-move' })
-      }, 100)
+      if (action.type === 'player-move' && game.turn === 'player') {
+        playerSound.current.play()
+      }
     },
   ] as [IState, (action: IAction) => void]
 }

@@ -8,9 +8,34 @@
     transform: scale(1);
   }
 }
+@keyframes highlight {
+  from {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes highlightBoard {
+  from {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
 
 .board {
   @apply grid grid-cols-3;
+  &--highlight {
+    animation: highlightBoard 0.4s linear;
+  }
   & > button > span {
     animation: scale 0.15s ease-out;
   }
@@ -26,4 +51,8 @@
   & > button:nth-last-child(-n + 3) {
     @apply border-b-0;
   }
+}
+.highlight {
+  animation: highlight 0.5s linear;
+  animation-iteration-count: 2;
 }

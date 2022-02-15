@@ -14,5 +14,6 @@ type IAction =
 type IState = {
   board: IBoard
   turn: 'computer' | 'player'
-  isCompleted: boolean
+  isCompleted?: boolean
+  hasWinner?: boolean
 }
