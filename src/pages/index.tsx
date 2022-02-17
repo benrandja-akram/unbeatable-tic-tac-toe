@@ -12,7 +12,6 @@ import { getWiningCombo } from '../utils'
 import useGameState from '../use-game-state'
 
 import styles from './index.module.scss'
-import Head from 'next/head'
 
 const Home: NextPage = () => {
   const [{ board, turn, isCompleted, hasWinner, sound }, dispatch] =
