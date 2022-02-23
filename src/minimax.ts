@@ -1,16 +1,16 @@
 import { cloneBoard, evaluateBoard, isBoardCompleted } from './utils'
 
-type EnhancedBoard = { board: IBoard; position: IPosition }
+type BoardState = { board: IBoard; position: IPosition }
 
 function minimax(board: IBoard) {
   return max(...generateBoards(board, 'o')).position
 }
 
-function max(...boards: EnhancedBoard[]): {
+function max(...boards: BoardState[]): {
   value: number
   position: IPosition
 } {
-  const maxBoard = findBoard(boards, Math.max, 1)
+  const maxBoard = findBoard(boards, Math.max)
   if (maxBoard) return maxBoard
 
   const evaluation = boards.map((b) =>
@@ -24,11 +24,11 @@ function max(...boards: EnhancedBoard[]): {
   }
 }
 
-function min(...boards: EnhancedBoard[]): {
+function min(...boards: BoardState[]): {
   value: number
   position: IPosition
 } {
-  const minBoard = findBoard(boards, Math.min, -1)
+  const minBoard = findBoard(boards, Math.min)
   if (minBoard) return minBoard
 
   const evaluation = boards.map((b) =>
@@ -62,22 +62,17 @@ function generateBoards(
 }
 
 function findBoard(
-  boards: EnhancedBoard[],
-  operator: (...values: number[]) => number,
-  breakValue: number
+  boards: BoardState[],
+  operator: (...values: number[]) => number
 ) {
   if (boards.some((b) => evaluateBoard(b.board) || isBoardCompleted(b.board))) {
-    let evaluations: number[] = []
-    for (const board of boards) {
-      const value = evaluateBoard(board.board)
+    let evaluations = boards.map((state) => evaluateBoard(state.board))
 
-      evaluations.push(value)
-      if (value === breakValue) break
-    }
-    const max = operator(...evaluations)
+    const bestValue = operator(...evaluations)
     return {
-      value: max,
-      position: boards[evaluations.findIndex((ev) => ev === max)].position,
+      value: bestValue,
+      position:
+        boards[evaluations.findIndex((ev) => ev === bestValue)].position,
     }
   }
 }
